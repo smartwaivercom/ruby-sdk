@@ -36,5 +36,22 @@ describe SmartwaiverWebhookClient do
       expect(response[:webhooks][:emailValidationRequired]).to eq(email_validation_required)
     end
 
+    it "#delete" do
+      path="#{API_URL}/v4/webhooks/configure"
+      FakeWeb.register_uri(:delete, path, :body => json_webhook_delete_results)
+
+      response = @client.delete
+
+      expect(response[:webhooks]).to eq({})
+    end
+
+    it "#resend" do
+      waiver_id = 'xyz'
+      path="#{API_URL}/v4/webhooks/resend/#{waiver_id}"
+      FakeWeb.register_uri(:put, path, :body => json_webhook_resend_results)
+
+      response = @client.resend(waiver_id)
+      expect(response[:webhooks_resend][:success]).to eq(true)
+    end
   end
 end

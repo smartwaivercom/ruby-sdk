@@ -13,20 +13,31 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-require 'smartwaiver-sdk/template_client'
+require 'smartwaiver-sdk/waiver_client'
 
 # The API Key for your account
 api_key='[INSERT API KEY]'
 
-client = SmartwaiverTemplateClient.new(api_key)
+# The unique ID of the signed waiver to be retrieved
+waiver_id='[INSERT WAIVER ID]'
+
+client = SmartwaiverWaiverClient.new(api_key)
 
 begin
-  result = client.list
-  result[:templates].each do |template|
-    puts "#{template[:templateId]}: #{template[:title]}"
+  result = client.photos(waiver_id)
+
+  photos = result[:photos]
+
+  puts "Waiver Photos for: #{photos[:title]}"
+
+  photos[:photos].each do |photo|
+    puts "#{photo[:photoId]}: #{photo[:date]}"
   end
+
 rescue SmartwaiverSDK::BadAPIKeyError=>bad
   puts "API Key error: #{bad.message}"
+rescue SmartwaiverSDK::RemoteServerError=>rse
+  puts "Remote Server error: #{rse.message}"
 rescue Exception=>e
-  puts "Exception thrown.  Error during template list: #{e.message}"
+  puts "Exception thrown.  Error during waiver retrieval: #{e.message}"
 end

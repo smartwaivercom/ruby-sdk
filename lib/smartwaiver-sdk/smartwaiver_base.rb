@@ -1,5 +1,5 @@
 #
-# Copyright 2017 Smartwaiver
+# Copyright 2018 Smartwaiver
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -28,6 +28,8 @@ module SmartwaiverSDK
     HTTP_GET = "GET"
     HTTP_POST = "POST"
     HTTP_PUT = "PUT"
+    HTTP_DELETE = "DELETE"
+
 
     def initialize(api_key, api_endpoint = DEFAULT_API_ENDPOINT)
       @api_endpoint = api_endpoint
@@ -86,6 +88,9 @@ module SmartwaiverSDK
         when HTTP_POST
           headers = common_http_headers.merge(rest_post_headers)
           response = @http.request_post(path, data, headers)
+      when HTTP_DELETE
+        headers = common_http_headers.merge(rest_post_headers)
+        response = @http.delete(path, headers)
       end
       check_response(response)
     end
@@ -120,6 +125,10 @@ module SmartwaiverSDK
        :ts => "1970-01-01T00:00:00+00:00",
        :type => ""
       }
+    end
+
+    def create_query_string(params)
+      URI.encode_www_form(params)
     end
   end
 end

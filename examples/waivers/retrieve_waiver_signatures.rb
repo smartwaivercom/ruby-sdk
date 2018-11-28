@@ -18,33 +18,39 @@ require 'smartwaiver-sdk/waiver_client'
 # The API Key for your account
 api_key='[INSERT API KEY]'
 
+# The unique ID of the signed waiver to be retrieved
+waiver_id='[INSERT WAIVER ID]'
+
 client = SmartwaiverWaiverClient.new(api_key)
 
 begin
-  # use default parameters
-  result = client.list
+  result = client.signatures(waiver_id)
 
-  puts "List all waivers:"
-  result[:waivers].each do |waiver|
-    puts "#{waiver[:waiverId]}: #{waiver[:title]}"
+  signatures = result[:signatures]
+
+  puts "Waiver Signatures for: #{signatures[:title]}"
+
+  signature_data = signatures[:signatures]
+  signature_data[:participants].each do |sig|
+    puts "Participant #{sig}"
   end
 
-  # Specifiy non default parameters
-  limit = 5
-  verified = true
-  template_id = "586ffe15134bd"
-  from_dts = '2017-01-01T00:00:00Z'
-  to_dts = '2017-02-01T00:00:00Z'
+  signature_data[:guardian].each do |sig|
+    puts "Guardian #{sig}"
+  end
 
-  result = client.list(limit, verified, template_id, from_dts, to_dts)
+  signature_data[:bodySignatures].each do |sig|
+    puts "Body Signatures #{sig}"
+  end
 
-  puts "List all waivers:"
-  result[:waivers].each do |waiver|
-    puts "#{waiver[:waiverId]}: #{waiver[:title]}"
+  signature_data[:bodyInitials].each do |sig|
+    puts "Body Initials #{sig}"
   end
 
 rescue SmartwaiverSDK::BadAPIKeyError=>bad
   puts "API Key error: #{bad.message}"
+rescue SmartwaiverSDK::RemoteServerError=>rse
+  puts "Remote Server error: #{rse.message}"
 rescue Exception=>e
-  puts "Exception thrown.  Error during waiver listing: #{e.message}"
+  puts "Exception thrown.  Error during waiver retrieval: #{e.message}"
 end

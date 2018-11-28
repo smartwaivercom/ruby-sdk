@@ -15,45 +15,31 @@
 
 require 'smartwaiver-sdk/smartwaiver_base'
 
-class SmartwaiverWebhookClient < SmartwaiverSDK::SmartwaiverBase
-
-  WEBHOOK_AFTER_EMAIL_ONLY = 'yes'
-  WEBHOOK_BEFORE_EMAIL_ONLY = 'no'
-  WEBHOOK_BEFORE_AND_AFTER_EMAIL = 'both'
+class SmartwaiverDynamicTemplateClient < SmartwaiverSDK::SmartwaiverBase
 
   def initialize(api_key, api_endpoint = DEFAULT_API_ENDPOINT)
     super(api_key, api_endpoint)
     @rest_endpoints = define_rest_endpoints
   end
 
-  def configuration
-    path =  @rest_endpoints[:configure]
-    make_api_request(path, HTTP_GET)
+  def create(template)
+    path =  @rest_endpoints[:create]
+    json = {:dynamic => {:expiration => template.expiration, :template => template.template_config.for_json, :data => template.data.for_json}}.to_json
+    make_api_request(path, HTTP_POST, json)
   end
 
-  def configure(endpoint, email_validation_required)
-    path =  @rest_endpoints[:configure]
-    json = {:endpoint => endpoint, :emailValidationRequired => email_validation_required}.to_json
-    make_api_request(path, HTTP_PUT, json)
-  end
-
-  def delete
-    path =  @rest_endpoints[:configure]
-    make_api_request(path, HTTP_DELETE)
-  end
-
-  def resend(waiver_id)
-    path =  "#{@rest_endpoints[:resend]}/#{waiver_id}"
+  def process(transaction_id)
+    path =  "#{@rest_endpoints[:process]}/#{transaction_id}"
     json = {}.to_json
-    make_api_request(path, HTTP_PUT, json)
+    make_api_request(path, HTTP_POST, json)
   end
 
   private
 
   def define_rest_endpoints
     {
-        :configure => "/v4/webhooks/configure",
-        :resend => "/v4/webhooks/resend"
+        :create => "/v4/dynamic/templates",
+        :process => "/v4/dynamic/process"
     }
   end
 end

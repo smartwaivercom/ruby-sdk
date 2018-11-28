@@ -17,7 +17,7 @@ end
 
 def json_api_version_results
   json = <<JAVASCRIPT
-{"version": "4.0.0"}
+{"version": "4.2.0"}
 JAVASCRIPT
   json
 end
@@ -40,6 +40,106 @@ def json_webhook_configure_results
 JAVASCRIPT
 end
 
+def json_webhook_delete_results
+  json = <<JAVASCRIPT
+{"version":4, "id":"8e82fa534da14b76a05013644ee735d2", "ts":"2017-01-17T15:46:58+00:00", "type":"webhooks", "webhooks":{}}
+JAVASCRIPT
+end
+
+def json_webhook_resend_results
+  json = <<JAVASCRIPT
+{"version":4, "id":"8e82fa534da14b76a05013644ee735d2", "ts":"2017-01-17T15:46:58+00:00", "type":"webhooks_resend", "webhooks_resend":{"success":true}}
+JAVASCRIPT
+end
+
+
+
+def json_webhook_queues_information_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "api_webhook_all_queue_message_count",
+    "api_webhook_all_queue_message_count" : {
+        "account": {
+            "messagesTotal": 2,
+            "messagesNotVisible": 0,
+            "messagesDelayed": 0
+        },
+        "template-4fc7d12601941": {
+            "messagesTotal": 4,
+            "messagesNotVisible": 2,
+            "messagesDelayed": 0
+        }
+    }
+}
+JAVASCRIPT
+end
+
+def json_webhook_queues_get_message_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "api_webhook_account_message_get",
+    "api_webhook_account_message_get" : {
+        "messageId": "9d58e8fc-6353-4ceb-b0a3-5412f3d05e28",
+        "payload": {
+            "unique_id": "xyz",
+            "event": "new-waiver"
+        }
+    }
+}
+JAVASCRIPT
+end
+
+def json_webhook_queues_delete_message_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "api_webhook_account_message_delete",
+    "api_webhook_account_message_delete" : {
+        "success": true
+    }
+}
+JAVASCRIPT
+end
+
+def json_webhook_queues_template_get_message_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "api_webhook_template_message_get",
+    "api_webhook_template_message_get" : {
+        "messageId": "9d58e8fc-6353-4ceb-b0a3-5412f3d05e28",
+        "payload": {
+            "unique_id": "xyz",
+            "event": "new-waiver"
+        }
+    }
+}
+JAVASCRIPT
+end
+
+def json_webhook_queues_template_delete_message_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "api_webhook_template_message_delete",
+    "api_webhook_template_message_delete" : {
+        "success": true
+    }
+}
+JAVASCRIPT
+end
 
 def json_template_list_results
   json = <<JAVASCRIPT
@@ -127,3 +227,235 @@ def json_waiver_single_results
 }
 JAVASCRIPT
 end
+
+def json_waiver_photos_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "photos",
+    "photos" : {
+        "waiverId": "6jebdfxzvrdkd",
+        "templateId": "sprswrvh2keeh",
+        "title": "Smartwaiver Demo Waiver",
+        "createdOn": "2017-01-24 13:12:29",
+        "photos": [
+            {
+                "type": "kiosk",
+                "date": "2017-01-01 00:00:00",
+                "tag": "IP: 192.168.2.0",
+                "fileType": "jpg",
+                "photoId": "CwLeDjffgDoGHua",
+                "photo": "BASE64 ENCODED PHOTO"
+            }
+        ]
+    }
+}
+JAVASCRIPT
+  json
+end
+
+def json_waiver_signatures_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "signatures",
+    "signatures" : {
+        "waiverId": "6jebdfxzvrdkd",
+        "templateId": "sprswrvh2keeh",
+        "title": "Smartwaiver Demo Waiver",
+        "createdOn": "2017-01-24 13:12:29",
+        "signatures": {
+            "participants": [
+                "BASE64 ENCODED IMAGE STRING"
+            ],
+            "guardian": [
+                "BASE64 ENCODED IMAGE STRING"
+            ],
+            "bodySignatures": [
+                "BASE64 ENCODED IMAGE STRING"
+            ],
+            "bodyInitials": [
+                "BASE64 ENCODED IMAGE STRING"
+            ]
+        }
+    }
+}
+JAVASCRIPT
+  json
+end
+
+
+def json_dynamic_template_default
+  '{"template":{"meta":{},"header":{},"body":{},"participants":{"adults":true},"standardQuestions":{},"guardian":{},"electronicConsent":{},"styling":{},"completion":{},"signatures":{},"processing":{}},"data":{"adult":true,"participants":[],"guardian":{"participant":false}}}'
+end
+
+def json_keys_create_results
+  json = <<JAVASCRIPT
+{"version" : 4,"id" : "a0256461ca244278b412ab3238f5efd2","ts" : "2017-01-24T11:14:25+00:00","type" : "published_keys",
+    "published_keys" : {
+        "newKey": {
+            "createdAt": "2017-01-24T11:14:25Z",
+            "key" : "SPoyAc7mNHK8L6Yaq2s2Bu8UMcBEoyTvDeizmj94p6",
+            "label" : "Ruby SDK"
+        },
+        "keys" : [
+            {
+                "createdAt": "2017-01-24T11:14:25Z",
+                "key" : "SPoyAc7mNHK8L6Yaq2s2Bu8UMcBEoyTvDeizmj94p6",
+                "label" : "demo"
+            }
+        ]
+    }
+}
+JAVASCRIPT
+  json
+end
+
+def json_keys_list_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,"id" : "a0256461ca244278b412ab3238f5efd2","ts" : "2017-01-24T11:14:25Z","type" : "published_keys",
+    "published_keys" : {
+        "keys" : [
+            {
+                "createdAt": "2017-01-24T11:14:25Z",
+                "key" : "SPoyAc7mNHK8L6Yaq2s2Bu8UMcBEoyTvDeizmj94p6",
+                "label" : "Ruby SDK"
+            }
+        ]
+    }
+}
+JAVASCRIPT
+  json
+end
+
+def json_search_1_results
+  json = <<JAVASCRIPT
+  {
+      "version" : 4,
+      "id" : "a0256461ca244278b412ab3238f5efd2",
+      "ts" : "2017-01-24T11:14:25+00:00",
+      "type" : "search",
+      "search" : {
+          "guid": "6jebdfxzvrdkd",
+      "count": 652,
+      "pages": 7,
+      "pageSize": 100
+      }
+  }
+JAVASCRIPT
+  json
+end
+
+def json_search_2_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25+00:00",
+    "type" : "search_results",
+    "search_results" : [
+        {
+            "waiverId": "6jebdfxzvrdkd",
+            "templateId": "sprswrvh2keeh",
+            "title": "Smartwaiver Demo Waiver",
+            "createdOn": "2017-01-24 13:12:29",
+            "expirationDate": "",
+            "expired": false,
+            "verified": true,
+            "kiosk": true,
+            "firstName": "Kyle",
+            "middleName": "",
+            "lastName": "Smith II",
+            "dob": "2008-12-25",
+            "clientIP": "192.0.2.0",
+            "email":"example@smartwaiver.com",
+            "marketingAllowed": false,
+            "addressLineOne": "626 NW Arizona Ave.",
+            "addressLineTwo": "Suite 2",
+            "addressCity": "Bend",
+            "addressState": "OR",
+            "addressZip": "97703",
+            "addressCountry": "US",
+            "emergencyContactName": "Mary Smith",
+            "emergencyContactPhone": "111-111-1111",
+            "insuranceCarrier": "My Insurance",
+            "insurancePolicyNumber": "1234567",
+            "driversLicenseNumber": "9876543",
+            "driversLicenseState": "OR",
+            "tags": [
+                "Green Team"
+            ],
+            "flags": {
+                "displayText": "Have you received our orientation?",
+                "reason": "was not selected"
+            },
+            "participants": [
+                {
+                    "firstName": "Kyle",
+                    "middleName": "",
+                    "lastName": "Smith II",
+                    "dob": "2008-12-25",
+                    "isMinor": true,
+                    "gender": "Male",
+                    "phone": "",
+                    "tags": ["YES"],
+                    "customParticipantFields" : {
+                        "bk3xydss4e9dy" : {
+                            "value" : "YES",
+                            "displayText" : "Is this participant ready to have fun?"
+                        }
+                    },
+                    "flags": [
+                        {
+                            "displayText": "Are you excited?",
+                            "reason": "was not selected"
+                        }
+                    ]
+                }
+            ],
+            "pdf": "Base64 Encoded PDF",
+            "photos": 1,
+            "guardian": {
+                "firstName": "Kyle",
+                "middleName": "",
+                "lastName": "Smith I",
+                "phone": "555-555-5555",
+                "dob": "1970-12-25"
+            },
+            "customWaiverFields" : {
+                "ha5bs1jy5wdop" : {
+                    "value" : "A friend",
+                    "displayText" : "How did you hear about Smartwaiver?"
+                }
+            }
+        }
+    ]
+}
+JAVASCRIPT
+  json
+end
+
+def json_user_settings_results
+  json = <<JAVASCRIPT
+{
+    "version" : 4,
+    "id" : "a0256461ca244278b412ab3238f5efd2",
+    "ts" : "2017-01-24T11:14:25Z",
+    "type" : "settings",
+    "settings" : {
+        "console" : {
+            "staticExpiration" : "never",
+            "rollingExpiration" : "never",
+            "rollingExpirationTime" : "signed"
+        }
+    }
+}
+JAVASCRIPT
+  json
+end
+

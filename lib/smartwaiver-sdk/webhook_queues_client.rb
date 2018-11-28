@@ -15,51 +15,49 @@
 
 require 'smartwaiver-sdk/smartwaiver_base'
 
-class SmartwaiverWaiverClient < SmartwaiverSDK::SmartwaiverBase
+class SmartwaiverWebhookQueuesClient < SmartwaiverSDK::SmartwaiverBase
+
+  WEBHOOK_AFTER_EMAIL_ONLY = 'yes'
+  WEBHOOK_BEFORE_EMAIL_ONLY = 'no'
+  WEBHOOK_BEFORE_AND_AFTER_EMAIL = 'both'
 
   def initialize(api_key, api_endpoint = DEFAULT_API_ENDPOINT)
     super(api_key, api_endpoint)
     @rest_endpoints = define_rest_endpoints
   end
 
-  def list(limit = 20, verified = nil, template_id = '', from_dts = '', to_dts = '')
-    path = "#{@rest_endpoints[:waivers]}?limit=#{limit}"
-    if !verified.nil?
-      path = "#{path}&verified=" + (verified ? 'true' : 'false')
-    end
-    if !template_id.empty?
-      path = "#{path}&templateId=#{template_id}"
-    end
-    if !from_dts.empty?
-      path = "#{path}&fromDts=#{from_dts}"
-    end
-    if !to_dts.empty?
-      path = "#{path}&toDts=#{to_dts}"
-    end
+  def information
+    path =  @rest_endpoints[:queues]
     make_api_request(path, HTTP_GET)
   end
 
-  def get(waiver_id, pdf=false)
-    path =  "#{@rest_endpoints[:waivers]}/#{waiver_id}?pdf=" + (pdf ? 'true' : 'false')
+  def get_message
+    path =  @rest_endpoints[:account]
     make_api_request(path, HTTP_GET)
   end
 
-  def photos(waiver_id)
-    path =  "#{@rest_endpoints[:waivers]}/#{waiver_id}/photos"
+  def delete_message(message_id)
+    path =  "#{@rest_endpoints[:account]}/#{message_id}"
+    make_api_request(path, HTTP_DELETE)
+  end
+
+  def get_template_message(template_id)
+    path =  "#{@rest_endpoints[:template]}/#{template_id}"
     make_api_request(path, HTTP_GET)
   end
 
-  def signatures(waiver_id)
-    path =  "#{@rest_endpoints[:waivers]}/#{waiver_id}/signatures"
-    make_api_request(path, HTTP_GET)
+  def delete_template_message(template_id, message_id)
+    path =  "#{@rest_endpoints[:template]}/#{template_id}/#{message_id}"
+    make_api_request(path, HTTP_DELETE)
   end
 
   private
 
   def define_rest_endpoints
     {
-        :waivers => "/v4/waivers"
+        :queues => "/v4/webhooks/queues",
+        :account => "/v4/webhooks/queues/account",
+        :template => "/v4/webhooks/queues/template"
     }
   end
 end
-

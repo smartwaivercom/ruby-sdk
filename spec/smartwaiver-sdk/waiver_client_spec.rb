@@ -53,5 +53,39 @@ describe SmartwaiverWaiverClient do
       @client.get(waiver_id, true)
     end
 
+    it "#photos" do
+      waiver_id = "6jebdfxzvrdkd"
+      path = "#{API_URL}/v4/waivers/#{waiver_id}/photos"
+      FakeWeb.register_uri(:get, path, :body => json_waiver_photos_results)
+      result = @client.photos(waiver_id)
+
+      expect(result[:photos][:waiverId]).to eq(waiver_id)
+      expect(result[:photos][:templateId]).to eq("sprswrvh2keeh")
+      expect(result[:photos][:title]).to eq("Smartwaiver Demo Waiver")
+
+      expect(result[:photos][:photos].length).to eq(1)
+      expect(result[:photos][:photos][0][:type]).to eq("kiosk")
+      expect(result[:photos][:photos][0][:tag]).to eq("IP: 192.168.2.0")
+      expect(result[:photos][:photos][0][:fileType]).to eq("jpg")
+      expect(result[:photos][:photos][0][:photoId]).to eq("CwLeDjffgDoGHua")
+      expect(result[:photos][:photos][0][:photo]).to eq("BASE64 ENCODED PHOTO")
+    end
+
+    it "#signatures" do
+      waiver_id = "6jebdfxzvrdkd"
+      path = "#{API_URL}/v4/waivers/#{waiver_id}/signatures"
+      FakeWeb.register_uri(:get, path, :body => json_waiver_signatures_results)
+      result = @client.signatures(waiver_id)
+
+      expect(result[:signatures][:waiverId]).to eq(waiver_id)
+      expect(result[:signatures][:templateId]).to eq("sprswrvh2keeh")
+      expect(result[:signatures][:title]).to eq("Smartwaiver Demo Waiver")
+
+      expect(result[:signatures][:signatures][:participants].length).to eq(1)
+      expect(result[:signatures][:signatures][:guardian].length).to eq(1)
+      expect(result[:signatures][:signatures][:bodySignatures].length).to eq(1)
+      expect(result[:signatures][:signatures][:bodyInitials].length).to eq(1)
+    end
+
   end
 end

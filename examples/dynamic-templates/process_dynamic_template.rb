@@ -13,20 +13,33 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-require 'smartwaiver-sdk/template_client'
+
+# Process Dynamic Template Sample Code
+#
+# export RUBYLIB=<path>/sw-sdk-ruby/lib
+#
+
+require 'smartwaiver-sdk/dynamic_template'
+require 'smartwaiver-sdk/dynamic_template'
+require 'smartwaiver-sdk/dynamic_template_data'
+require 'smartwaiver-sdk/dynamic_template_client'
 
 # The API Key for your account
-api_key='[INSERT API KEY]'
+api_key='<API_KEY>'
 
-client = SmartwaiverTemplateClient.new(api_key)
+# Put Transaction ID here
+transaction_id='<TRANSACTION_ID>'
+
+dtc = SmartwaiverDynamicTemplateClient.new(api_key)
 
 begin
-  result = client.list
-  result[:templates].each do |template|
-    puts "#{template[:templateId]}: #{template[:title]}"
-  end
+  result = dtc.process(transaction_id)
+  puts "#{result[:type]}"
+  puts "#{result[:dynamic_process][:transactionId]}"
+  puts "#{result[:dynamic_process][:waiverId]}"
 rescue SmartwaiverSDK::BadAPIKeyError=>bad
   puts "API Key error: #{bad.message}"
 rescue Exception=>e
-  puts "Exception thrown.  Error during template list: #{e.message}"
+  puts "Exception thrown.  Error during waiver properties: #{e.message}"
 end
+

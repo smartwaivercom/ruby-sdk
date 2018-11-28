@@ -13,20 +13,31 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-require 'smartwaiver-sdk/template_client'
+require 'smartwaiver-sdk/smartwaiver_base'
 
-# The API Key for your account
-api_key='[INSERT API KEY]'
+class SmartwaiverKeysClient < SmartwaiverSDK::SmartwaiverBase
 
-client = SmartwaiverTemplateClient.new(api_key)
-
-begin
-  result = client.list
-  result[:templates].each do |template|
-    puts "#{template[:templateId]}: #{template[:title]}"
+  def initialize(api_key, api_endpoint = DEFAULT_API_ENDPOINT)
+    super(api_key, api_endpoint)
+    @rest_endpoints = define_rest_endpoints
   end
-rescue SmartwaiverSDK::BadAPIKeyError=>bad
-  puts "API Key error: #{bad.message}"
-rescue Exception=>e
-  puts "Exception thrown.  Error during template list: #{e.message}"
+
+  def create(label)
+    path =  @rest_endpoints[:published]
+    json = {:label => label}.to_json
+    make_api_request(path, HTTP_POST, json)
+  end
+
+  def list
+    path =  @rest_endpoints[:published]
+    make_api_request(path, HTTP_GET)
+  end
+
+  private
+
+  def define_rest_endpoints
+    {
+        :published => "/v4/keys/published"
+    }
+  end
 end

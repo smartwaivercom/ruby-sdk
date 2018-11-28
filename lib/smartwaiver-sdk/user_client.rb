@@ -13,16 +13,25 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-module SmartwaiverSDK
-  VERSION = "4.2.0"
+require 'smartwaiver-sdk/smartwaiver_base'
 
-  class Info
-    @@ClientVersion = SmartwaiverSDK::VERSION
-    @@RubyVersion = RUBY_VERSION
-    @@UserAgent = "SmartwaiverAPI:#{@@ClientVersion}-Ruby:#{@@RubyVersion}";
+class SmartwaiverUserClient < SmartwaiverSDK::SmartwaiverBase
 
-    def self.get_user_agent
-      return @@UserAgent
-    end
+  def initialize(api_key, api_endpoint = DEFAULT_API_ENDPOINT)
+    super(api_key, api_endpoint)
+    @rest_endpoints = define_rest_endpoints
+  end
+
+  def settings()
+    path =  @rest_endpoints[:settings]
+    make_api_request(path, HTTP_GET)
+  end
+
+  private
+
+  def define_rest_endpoints
+    {
+        :settings => "/v4/settings"
+    }
   end
 end

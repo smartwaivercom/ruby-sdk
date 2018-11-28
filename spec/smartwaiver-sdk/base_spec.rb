@@ -16,6 +16,10 @@ class SmartwaiverTest < SmartwaiverSDK::SmartwaiverBase
     make_api_request(path, HTTP_PUT, data)
   end
 
+  def delete_test(path)
+    make_api_request(path, HTTP_DELETE)
+  end
+
   def parse_response_body_test(data)
     parse_response_body(data)
   end
@@ -24,6 +28,9 @@ class SmartwaiverTest < SmartwaiverSDK::SmartwaiverBase
     check_response(response)
   end
 
+  def create_query_string_test(params)
+    create_query_string(params)
+  end
 end
 
 describe SmartwaiverSDK::SmartwaiverBase do
@@ -115,6 +122,23 @@ describe SmartwaiverSDK::SmartwaiverBase do
         end
       end
     end
+
+    it "DELETE" do
+      path = "#{API_URL}/delete_test"
+      FakeWeb.register_uri(:delete, path, :body => json_base_results)
+      @client.delete_test(path)
+
+      request = FakeWeb.last_request
+      expect(request.method).to eq("DELETE")
+      request.each_header do |key, value|
+        case key
+        when "user-agent"
+          expect(value).to match(/^SmartwaiverAPI*/)
+        when "sw-api-key"
+          expect(value).to eq(@api_key)
+        end
+      end
+    end
   end
 
   describe "#parse_response_body" do
@@ -140,6 +164,19 @@ describe SmartwaiverSDK::SmartwaiverBase do
       expect(data[:id]).to eq("")
       expect(data[:ts]).to eq("1970-01-01T00:00:00+00:00")
       expect(data[:type]).to eq("")
+    end
+  end
+
+  describe "#create_query_string" do
+    before do
+      @client = SmartwaiverTest.new(@api_key)
+    end
+
+    it "create a valid query string" do
+      params = {:a => "first", :b => "with space"}
+      query_string = @client.create_query_string_test(params)
+
+      expect(query_string).to eq("a=first&b=with+space")
     end
   end
 

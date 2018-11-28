@@ -11,6 +11,8 @@ Table of Contents
     * [Retrieve a Specific Template](#retrieve-a-specific-template)
     * [List all Signed Waivers](#list-all-signed-waivers)
     * [Retrieve a Specific Waiver](#retrieve-a-specific-waiver)
+    * [Retrieve Photos on a Waiver](#retrieve-photos-on-a-waiver)
+    * [Search For Waivers](#search-for-waivers)
     * [Retrieve/Set Webhook Config](#retrieveset-webhook-configuration)
   * [Exception Handling](#exception-handling)
     * [Status Codes](#status-codes)
@@ -245,6 +247,179 @@ result = client.get(waiver_id, pdf)
 ```
 
 The code provided here is also combined in to one example in [retrieve_single_waiver.rb](examples/waivers/retrieve_single_waiver.rb)
+
+Retrieve Photos on a Waiver
+----------
+
+We can also use the API to retrieve any photos taken when the waiver was signed or attached later with the console.
+All we need is you're API key and the ID of a signed waiver, which has attached photos.
+
+
+If you don't have a waiver ID to use, you can get a list of signed waivers in your account [here](#list-all-signed-waivers)
+
+First let's set up the basic Smartwaiver object. Make sure to put in your account's API Key where it says `[INSERT API KEY]`
+
+```ruby
+require 'smartwaiver-sdk/waiver_client'
+
+# The API Key for your account
+api_key='[INSERT API KEY]'
+
+client = SmartwaiverWaiverClient.new(api_key)
+```
+
+Now, we can request the photos on a specific waiver.
+Make sure to put your waiver ID in where it says `[INSERT WAIVER ID]`
+
+```ruby
+# The unique ID of the signed waiver to be retrieved
+waiver_id='[INSERT WAIVER ID]'
+
+result = client.photos(waiver_id)
+
+photos = result[:photos]
+```
+
+This photos object has a little meta-data we can print out:
+
+```ruby
+# Print a little header
+puts "Waiver Photos for: #{photos[:title]}"
+
+photos[:photos].each do |photo|
+  puts "#{photo[:photoId]}: #{photo[:date]}"
+end
+```
+
+The code provided here is also combined in to one example in [retrieve_waiver_photos.rb](examples/waivers/retrieve_waiver_photos.rb)
+
+
+Search for Waivers
+----------
+
+First let's set up the basic Smartwaiver object. Make sure to put in your account's API Key where it says `[INSERT API KEY]`
+
+```ruby
+require 'smartwaiver-sdk/search_client'
+
+# The API Key for your account
+api_key='[INSERT API KEY]'
+
+client = SmartwaiverSearchClient.new(api_key)
+```
+
+Now we can request a search for signed waivers from your account.
+
+```ruby
+# Request all waivers signed in 2018
+results = client.search('', '2018-01-01 00:00:00')
+```
+
+**Note: The search route is a blocking search. Thus, a request to search for large amounts of data can take up to a few seconds.
+As such, this route should not be used for anything where real-time performance is important. Instead use the Waivers route.**
+
+This will return a search object containing metadata about the results of our search.
+We can easily print out all that information:
+
+```ruby
+search = results[:search]
+# Print out some information about the result of the search
+puts "Search Complete:"
+puts "  Search ID: #{search[:guid]}"
+puts "  Waiver Count: #{search[:count]}"
+puts "  #{search[:pages]} pages of size #{search[:pageSize]}"
+```
+
+The server has stored the results of our search request under the GUID given.
+We can now loop through the pages and request each page, which will be a list of up to 100 waivers.
+For example, if we wanted to created a list of all first names from our search, we would do that like this:
+
+```ruby
+# We're going to create a list of all the first names on all the waivers
+name_list = [];
+
+pages = search[:pages]
+current_page = 0
+search_guid = search[:guid]
+
+while current_page < pages
+  puts "Requesting page: #{current_page}/#{pages} ..."
+
+  waivers = client.results(search_guid, current_page)
+
+  puts "Processing page: #{current_page}/#{pages} ..."
+
+  waivers[:search_results].each do |waiver|
+    name_list.push(waiver[:firstName])
+  end
+
+  current_page = current_page + 1
+end
+```
+
+To see all the different properties a waiver has, check out [waiver_properties.rb](examples/waivers/waiver_properties.rb)
+
+This examples is also available in [basic_search.rb](examples/search/basic_search.rb)
+
+### Search Parameters
+
+We can also restrict our search with more parameters.
+For example, what if we only want to return waivers for one of the templates in our account.
+Here is the code to do that:
+
+```ruby
+# The unique ID of the template to search for
+
+template_id='[INSERT TEMPLATE ID]'
+
+# Request all waivers signed for this template
+results = client.search(template_id)
+```
+
+Or what if we only want any waivers that have not been verified (either by email or at the kiosk)?
+
+```ruby
+# Request all waivers signed that not have been email verified
+results = client.search(template_id, '', '', '', '', true)
+```
+
+What other parameters can you use? Here are some more examples:
+
+```ruby
+# Request all waivers signed for this template after the given date
+results = client.search(template_id, '2017-01-01 00:00:00')
+
+# Request all waivers signed for this template before the given date
+results = client.search(template_id, '', '2017-01-01 00:00:00')
+
+# Request all waivers signed for this template with a participant name Kyle
+results = client.search(template_id, '', '', 'Kyle') 
+
+# Request all waivers signed for this template with a participant name Kyle Smith
+results = client.search(template_id, '', '', 'Kyle', 'Smith') 
+
+# Request all waivers signed with a participant name Kyle that have been email verified
+results = client.search(template_id, '', '', 'Kyle', '', true) 
+
+# Request all waivers signed in ascending sorted order
+results = client.search(template_id, '', '', '', '', '', false)
+```
+
+These examples are also available in [search_params.rb](examples/search/search_params.rb)
+
+### Parameter Options
+
+| Parameter Name | Default Value | Accepted Values   | Notes                                                                                   |
+| -------------- | ------------- | ----------------- | --------------------------------------------------------------------------------------- |
+| templateId     |               | Valid Template ID | Limit signed waivers to only this template                                              |
+| fromDts        |               | ISO 8601 Date     | Limit to signed waivers between after this date                                         |
+| toDts          |               | ISO 8601 Date     | Limit to signed waivers between before this date                                        |
+| firstName      |               | Alpha-numeric     | Limit to signed waivers that have a participant with this first name (Case Insensitive) |
+| lastName       |               | Alpha-numeric     | Limit to signed waivers that have a participant with this last name (Case Insensitive)  |
+| verified       | null          | true/false/null   | Limit selection to waiver that have been verified (true), not (false), or both (null)   |
+| sortDesc       | true          | true/false        | Sort results in descending (latest signed waiver first) order                           |
+
+
 
 Retrieve/Set Webhook Configuration
 ----------
