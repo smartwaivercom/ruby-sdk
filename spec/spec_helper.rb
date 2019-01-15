@@ -17,7 +17,7 @@ end
 
 def json_api_version_results
   json = <<JAVASCRIPT
-{"version": "4.2.0"}
+{"version": "4.2.1"}
 JAVASCRIPT
   json
 end

@@ -15,6 +15,18 @@ describe SmartwaiverDynamicTemplateData do
       expect(td.adult).to eq(true)
       expect(td.participants).to eq([])
       expect(td.guardian).to be_kind_of(SmartwaiverGuardian)
+      expect(td.address_line_one).to be_nil
+      expect(td.address_line_two).to be_nil
+      expect(td.address_country).to be_nil
+      expect(td.address_state).to be_nil
+      expect(td.address_zip).to be_nil
+      expect(td.email).to be_nil
+      expect(td.emergency_contact_name).to be_nil
+      expect(td.emergency_contact_phone).to be_nil
+      expect(td.insurance_carrier).to be_nil
+      expect(td.insurance_policy_number).to be_nil
+      expect(td.drivers_license_state).to be_nil
+      expect(td.drivers_license_number).to be_nil
     end
 
     it "#initialize with non default adult" do
@@ -34,7 +46,7 @@ describe SmartwaiverDynamicTemplateData do
       expect(td.participants).to eq([p])
     end
 
-    it "#for_json" do
+    it "#for_json minimal" do
       td = SmartwaiverDynamicTemplateData.new
 
       p = SmartwaiverParticipant.new
@@ -49,6 +61,52 @@ describe SmartwaiverDynamicTemplateData do
           "adult"=>true,
           "participants"=>[{"firstName"=>"Rocky", "lastName"=>"RockChuck"}],
           "guardian"=>{"participant"=>false}
+      }
+      expect(a).to eq(a_expected)
+    end
+
+    it "#for_json all fields" do
+      td = SmartwaiverDynamicTemplateData.new(false)
+
+      p = SmartwaiverParticipant.new
+      p.first_name = "Rocky"
+      p.last_name = "RockChuck"
+      p.gender = "M"
+      p.dob = "2010-01-01"
+
+      td.add_participant(p)
+
+      td.address_line_one = "123 Main St."
+      td.address_line_two = "Apt A"
+      td.address_country = "US"
+      td.address_state = "OR"
+      td.address_zip = "97703"
+      td.email = "rocky@smartwaiver.com"
+      td.emergency_contact_name = "Mrs Rocky"
+      td.emergency_contact_phone = "800-555-1212"
+      td.insurance_carrier = "Aetna"
+      td.insurance_policy_number = "H01"
+      td.drivers_license_state = "OR"
+      td.drivers_license_number = "010101"
+
+      a = td.for_json
+
+      a_expected = {
+          "adult"=>false,
+          "participants"=>[{"firstName"=>"Rocky", "lastName"=>"RockChuck", "gender" => "M", "dob" => "2010-01-01"}],
+          "guardian"=>{"participant"=>false},
+          "addressLineOne" => "123 Main St.",
+          "addressLineTwo" => "Apt A",
+          "addressCountry" => "US",
+          "addressState" => "OR",
+          "addressZip" => "97703",
+          "email" => "rocky@smartwaiver.com",
+          "emergencyContactName" => "Mrs Rocky",
+          "emergencyContactPhone" => "800-555-1212",
+          "insuranceCarrier" => "Aetna",
+          "insurancePolicyNumber" => "H01",
+          "driversLicenseState" => "OR",
+          "driversLicenseNumber" => "010101"
       }
       expect(a).to eq(a_expected)
     end

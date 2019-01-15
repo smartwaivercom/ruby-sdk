@@ -14,7 +14,7 @@
 # under the License.
 
 module SmartwaiverSDK
-  VERSION = "4.2.0"
+  VERSION = "4.2.1"
 
   class Info
     @@ClientVersion = SmartwaiverSDK::VERSION

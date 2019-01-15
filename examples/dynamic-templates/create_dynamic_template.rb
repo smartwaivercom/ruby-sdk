@@ -36,6 +36,8 @@ participant.last_name='Chuck'
 participant.dob = '1986-01-02'
 data.add_participant(participant)
 
+# Fill in email
+data.email = 'rocky.chuck@example.com'
 
 # Create Template Configuration object
 c = SmartwaiverDynamicTemplateConfig.new
