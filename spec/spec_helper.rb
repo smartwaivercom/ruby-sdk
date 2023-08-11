@@ -2,7 +2,6 @@ dir = File.dirname(__FILE__)
 
 require 'rubygems'
 require 'webmock/rspec'
-require 'rr'
 require 'json'
 
 $LOAD_PATH << "#{dir}/../lib/smartwaiver-sdk"
