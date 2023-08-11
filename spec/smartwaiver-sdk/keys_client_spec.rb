@@ -6,7 +6,6 @@ describe SmartwaiverKeysClient do
   attr_reader :client, :api_key
 
   before do
-    FakeWeb.allow_net_connect = false
     @api_key = "apikey"
     @client = SmartwaiverKeysClient.new(@api_key)
   end
@@ -20,7 +19,7 @@ describe SmartwaiverKeysClient do
       label = 'Ruby SDK'
 
       path="#{API_URL}/v4/keys/published"
-      FakeWeb.register_uri(:post, path, :body => json_keys_create_results)
+      stub_request(:post, path).to_return(body: json_keys_create_results)
 
       response = @client.create(label)
       expect(response[:published_keys][:newKey][:key]).to eq("SPoyAc7mNHK8L6Yaq2s2Bu8UMcBEoyTvDeizmj94p6")
@@ -30,7 +29,7 @@ describe SmartwaiverKeysClient do
 
     it "#list" do
       path="#{API_URL}/v4/keys/published"
-      FakeWeb.register_uri(:get, path, :body => json_keys_list_results)
+      stub_request(:get, path).to_return(body: json_keys_list_results)
 
       response = @client.list
       expect(response[:published_keys][:keys].length).to eq(1)

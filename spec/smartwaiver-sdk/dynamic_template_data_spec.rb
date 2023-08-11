@@ -3,11 +3,6 @@ require "#{dir}/../spec_helper"
 require "#{dir}/../../lib/smartwaiver-sdk/dynamic_template_data"
 
 describe SmartwaiverDynamicTemplateData do
-
-  before do
-    FakeWeb.allow_net_connect = false
-  end
-
   describe "dynamic template data" do
     it "#initialize" do
       td = SmartwaiverDynamicTemplateData.new

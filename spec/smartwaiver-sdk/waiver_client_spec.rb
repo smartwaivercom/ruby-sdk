@@ -6,7 +6,6 @@ describe SmartwaiverWaiverClient do
   attr_reader :client, :api_key
 
   before do
-    FakeWeb.allow_net_connect = false
     @api_key = "apikey"
     @client = SmartwaiverWaiverClient.new(@api_key)
   end
@@ -18,7 +17,7 @@ describe SmartwaiverWaiverClient do
 
     it "#list all default values" do
       path = "#{API_URL}/v4/waivers?limit=20"
-      FakeWeb.register_uri(:get, path, :body => json_waiver_list_results)
+      stub_request(:get, path).to_return(body: json_waiver_list_results)
       result = @client.list
       expect(result[:waivers].length).to eq(3)
     end
@@ -31,14 +30,14 @@ describe SmartwaiverWaiverClient do
       to_dts = '2017-02-01T00:00:00Z'
 
       path = "#{API_URL}/v4/waivers?limit=#{limit}&verified=#{verified}&templateId=#{template_id}&fromDts=#{from_dts}&toDts=#{to_dts}"
-      FakeWeb.register_uri(:get, path, :body => json_waiver_list_results)
+      stub_request(:get, path).to_return(body: json_waiver_list_results)
       @client.list(limit, verified, template_id, from_dts, to_dts)
     end
 
     it "#get without pdf" do
       waiver_id = "Vzy8f6gnCWVcQBURdydwPT"
       path = "#{API_URL}/v4/waivers/#{waiver_id}?pdf=false"
-      FakeWeb.register_uri(:get, path, :body => json_waiver_single_results)
+      stub_request(:get, path).to_return(body: json_waiver_single_results)
       result = @client.get(waiver_id)
 
       expect(result[:waiver][:waiverId]).to eq(waiver_id)
@@ -49,14 +48,14 @@ describe SmartwaiverWaiverClient do
     it "#get with pdf" do
       waiver_id = "Vzy8f6gnCWVcQBURdydwPT"
       path = "#{API_URL}/v4/waivers/#{waiver_id}?pdf=true"
-      FakeWeb.register_uri(:get, path, :body => json_waiver_single_results)
+      stub_request(:get, path).to_return(body: json_waiver_single_results)
       @client.get(waiver_id, true)
     end
 
     it "#photos" do
       waiver_id = "6jebdfxzvrdkd"
       path = "#{API_URL}/v4/waivers/#{waiver_id}/photos"
-      FakeWeb.register_uri(:get, path, :body => json_waiver_photos_results)
+      stub_request(:get, path).to_return(body: json_waiver_photos_results)
       result = @client.photos(waiver_id)
 
       expect(result[:photos][:waiverId]).to eq(waiver_id)
@@ -74,7 +73,7 @@ describe SmartwaiverWaiverClient do
     it "#signatures" do
       waiver_id = "6jebdfxzvrdkd"
       path = "#{API_URL}/v4/waivers/#{waiver_id}/signatures"
-      FakeWeb.register_uri(:get, path, :body => json_waiver_signatures_results)
+      stub_request(:get, path).to_return(body: json_waiver_signatures_results)
       result = @client.signatures(waiver_id)
 
       expect(result[:signatures][:waiverId]).to eq(waiver_id)

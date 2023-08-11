@@ -6,7 +6,6 @@ describe SmartwaiverWebhookQueuesClient do
   attr_reader :client, :api_key
 
   before do
-    FakeWeb.allow_net_connect = false
     @api_key = "apikey"
     @client = SmartwaiverWebhookQueuesClient.new(@api_key)
   end
@@ -18,7 +17,7 @@ describe SmartwaiverWebhookQueuesClient do
 
     it "#information" do
       path="#{API_URL}/v4/webhooks/queues"
-      FakeWeb.register_uri(:get, path, :body => json_webhook_queues_information_results)
+      stub_request(:get, path).to_return(body: json_webhook_queues_information_results)
 
       response = @client.information
       expect(response[:type]).to eq('api_webhook_all_queue_message_count')
@@ -28,7 +27,7 @@ describe SmartwaiverWebhookQueuesClient do
 
     it "#get_message"  do
         path="#{API_URL}/v4/webhooks/queues/account"
-        FakeWeb.register_uri(:get, path, :body => json_webhook_queues_get_message_results)
+        stub_request(:get, path).to_return(body: json_webhook_queues_get_message_results)
 
         response = @client.get_message
         expect(response[:type]).to eq('api_webhook_account_message_get')
@@ -40,7 +39,7 @@ describe SmartwaiverWebhookQueuesClient do
     it "#delete_message"  do
       message_id = 'x-y-z'
       path="#{API_URL}/v4/webhooks/queues/account/#{message_id}"
-      FakeWeb.register_uri(:delete, path, :body => json_webhook_queues_delete_message_results)
+      stub_request(:delete, path).to_return(body: json_webhook_queues_delete_message_results)
 
       response = @client.delete_message(message_id)
       expect(response[:type]).to eq('api_webhook_account_message_delete')
@@ -50,7 +49,7 @@ describe SmartwaiverWebhookQueuesClient do
     it "#get_template_message"  do
       template_id = 't1'
       path="#{API_URL}/v4/webhooks/queues/template/#{template_id}"
-      FakeWeb.register_uri(:get, path, :body => json_webhook_queues_template_get_message_results)
+      stub_request(:get, path).to_return(body: json_webhook_queues_template_get_message_results)
 
       response = @client.get_template_message(template_id)
       expect(response[:type]).to eq('api_webhook_template_message_get')
@@ -63,7 +62,7 @@ describe SmartwaiverWebhookQueuesClient do
       template_id = 't1'
       message_id = 'x-y-z'
       path="#{API_URL}/v4/webhooks/queues/template/#{template_id}/#{message_id}"
-      FakeWeb.register_uri(:delete, path, :body => json_webhook_queues_template_delete_message_results)
+      stub_request(:delete, path).to_return(body: json_webhook_queues_template_delete_message_results)
 
       response = @client.delete_template_message(template_id, message_id)
 

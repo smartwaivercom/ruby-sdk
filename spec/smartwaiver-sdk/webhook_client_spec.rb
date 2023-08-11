@@ -6,7 +6,6 @@ describe SmartwaiverWebhookClient do
   attr_reader :client, :api_key
 
   before do
-    FakeWeb.allow_net_connect = false
     @api_key = "apikey"
     @client = SmartwaiverWebhookClient.new(@api_key)
   end
@@ -18,7 +17,7 @@ describe SmartwaiverWebhookClient do
 
     it "#configuration" do
       path="#{API_URL}/v4/webhooks/configure"
-      FakeWeb.register_uri(:get, path, :body => json_webhook_configuration_results)
+      stub_request(:get, path).to_return(body: json_webhook_configuration_results)
 
       response = @client.configuration
       expect(response[:webhooks].length).to eq(2)
@@ -29,7 +28,7 @@ describe SmartwaiverWebhookClient do
       email_validation_required="yes"
 
       path="#{API_URL}/v4/webhooks/configure"
-      FakeWeb.register_uri(:put, path, :body => json_webhook_configuration_results)
+      stub_request(:put, path).to_return(body: json_webhook_configuration_results)
 
       response = @client.configure(endpoint, email_validation_required)
       expect(response[:webhooks][:endpoint]).to eq(endpoint)
@@ -38,7 +37,7 @@ describe SmartwaiverWebhookClient do
 
     it "#delete" do
       path="#{API_URL}/v4/webhooks/configure"
-      FakeWeb.register_uri(:delete, path, :body => json_webhook_delete_results)
+      stub_request(:delete, path).to_return(body: json_webhook_delete_results)
 
       response = @client.delete
 
@@ -48,7 +47,7 @@ describe SmartwaiverWebhookClient do
     it "#resend" do
       waiver_id = 'xyz'
       path="#{API_URL}/v4/webhooks/resend/#{waiver_id}"
-      FakeWeb.register_uri(:put, path, :body => json_webhook_resend_results)
+      stub_request(:put, path).to_return(body: json_webhook_resend_results)
 
       response = @client.resend(waiver_id)
       expect(response[:webhooks_resend][:success]).to eq(true)
