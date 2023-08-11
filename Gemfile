@@ -1,9 +1,5 @@
-source "http://rubygems.org"
+source 'https://rubygems.org/'
 
+gemspec
 
-group :test, :development do
-  gem 'rspec'
-  gem 'rr'
-  gem 'rake'
-  gem 'webmock'
-end
+gem 'rake'
