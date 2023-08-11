@@ -6,7 +6,6 @@ describe SmartwaiverTemplateClient do
   attr_reader :client, :api_key
 
   before do
-    FakeWeb.allow_net_connect = false
     @api_key = "apikey"
     @client = SmartwaiverTemplateClient.new(@api_key)
   end
@@ -18,7 +17,7 @@ describe SmartwaiverTemplateClient do
 
     it "#list" do
       path = "#{API_URL}/v4/templates"
-      FakeWeb.register_uri(:get, path, :body => json_template_list_results)
+      stub_request(:get, path).to_return(body: json_template_list_results)
       result = @client.list
 
       expect(result[:templates].length).to eq(3)
@@ -27,7 +26,7 @@ describe SmartwaiverTemplateClient do
     it "#get" do
       template_id = "586ffe15134bc"
       path = "#{API_URL}/v4/templates/#{template_id}"
-      FakeWeb.register_uri(:get, path, :body => json_template_single_results)
+      stub_request(:get, path).to_return(body: json_template_single_results)
       result = @client.get(template_id)
       expect(result[:template][:templateId]).to eq(template_id)
     end

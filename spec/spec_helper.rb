@@ -1,7 +1,7 @@
 dir = File.dirname(__FILE__)
 
 require 'rubygems'
-require 'fakeweb'
+require 'webmock/rspec'
 require 'rr'
 require 'json'
 

@@ -4,10 +4,6 @@ require "#{dir}/../../lib/smartwaiver-sdk/dynamic_template"
 
 describe SmartwaiverDynamicTemplate do
 
-  before do
-    FakeWeb.allow_net_connect = false
-  end
-
   describe "dynamic templates" do
     it "#initialize" do
       dt = SmartwaiverDynamicTemplate.new

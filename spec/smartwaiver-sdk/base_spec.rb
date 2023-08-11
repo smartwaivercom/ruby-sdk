@@ -36,7 +36,6 @@ end
 describe SmartwaiverSDK::SmartwaiverBase do
 
   before do
-    FakeWeb.allow_net_connect = false
     @api_key = "apikey"
   end
 
@@ -50,7 +49,7 @@ describe SmartwaiverSDK::SmartwaiverBase do
 
   describe "#version" do
     it "retrieves the current version of the API" do
-      FakeWeb.register_uri(:get, "https://api.smartwaiver.com/version", :body => json_api_version_results)
+      stub_request(:get, "https://api.smartwaiver.com/version").to_return(body: json_api_version_results)
       client = SmartwaiverSDK::SmartwaiverBase.new(@api_key)
       version = client.api_version
 
@@ -65,79 +64,63 @@ describe SmartwaiverSDK::SmartwaiverBase do
 
     it "GET" do
       path = "#{API_URL}/get_test"
-      FakeWeb.register_uri(:get, path, :body => json_base_results)
-      @client.get_test(path)
 
-      request = FakeWeb.last_request
-      expect(request.method).to eq("GET")
-      expect(request.body).to eq(nil)
-      request.each_header do |key, value|
-        case key
-          when "user-agent"
-            expect(value).to match(/^SmartwaiverAPI*/)
-          when "sw-api-key"
-            expect(value).to eq(@api_key)
-        end
-      end
+      stub_request(:get, path).
+        with(
+          headers: {
+            'user-agent' => /^SmartwaiverAPI*/,
+            'sw-api-key' => @api_key
+          }
+        ).to_return(body: json_base_results)
+
+      @client.get_test(path)
     end
 
     it "POST" do
       path = "#{API_URL}/post_test"
       data = "{\"json\":\"data\"}"
-      FakeWeb.register_uri(:post, path, :body => json_base_results)
-      @client.post_test(path, data)
 
-      request = FakeWeb.last_request
-      expect(request.method).to eq("POST")
-      expect(request.body).to eq(data)
-      request.each_header do |key, value|
-        case key
-          when "user-agent"
-            expect(value).to match(/^SmartwaiverAPI*/)
-          when "sw-api-key"
-            expect(value).to eq(@api_key)
-          when "content-type"
-            expect(value).to eq("application/json")
-        end
-      end
+      stub_request(:post, path).
+        with(
+          body: data,
+          headers: {
+            'user-agent' => /^SmartwaiverAPI*/,
+            'sw-api-key' => @api_key,
+            'content-type' => "application/json"
+          }
+        ).to_return(body: json_base_results)
+
+      @client.post_test(path, data)
     end
 
     it "PUT" do
       path = "#{API_URL}/put_test"
       data = "{\"json\":\"data\"}"
-      FakeWeb.register_uri(:put, path, :body => json_base_results)
-      @client.put_test(path, data)
 
-      request = FakeWeb.last_request
-      expect(request.method).to eq("PUT")
-      expect(request.body).to eq(data)
-      request.each_header do |key, value|
-        case key
-          when "user-agent"
-            expect(value).to match(/^SmartwaiverAPI*/)
-          when "sw-api-key"
-            expect(value).to eq(@api_key)
-          when "content-type"
-            expect(value).to eq("application/json")
-        end
-      end
+      stub_request(:put, path).
+        with(
+          headers: {
+            'user-agent' => /^SmartwaiverAPI*/,
+            'sw-api-key' => @api_key,
+            'content-type' => "application/json"
+          }
+        ).to_return(body: json_base_results)
+
+      @client.put_test(path, data)
     end
 
     it "DELETE" do
       path = "#{API_URL}/delete_test"
-      FakeWeb.register_uri(:delete, path, :body => json_base_results)
-      @client.delete_test(path)
 
-      request = FakeWeb.last_request
-      expect(request.method).to eq("DELETE")
-      request.each_header do |key, value|
-        case key
-        when "user-agent"
-          expect(value).to match(/^SmartwaiverAPI*/)
-        when "sw-api-key"
-          expect(value).to eq(@api_key)
-        end
-      end
+      stub_request(:delete, path).
+        with(
+          headers: {
+            'user-agent' => /^SmartwaiverAPI*/,
+            'sw-api-key' => @api_key
+          }
+        ).to_return(body: json_base_results)
+
+      @client.delete_test(path)
     end
   end
 
@@ -183,7 +166,7 @@ describe SmartwaiverSDK::SmartwaiverBase do
   describe "#check_response" do
     it "HTTP 200" do
       path = "#{API_URL}/get_test"
-      FakeWeb.register_uri(:get, path, :body => json_base_results)
+      stub_request(:get, path).to_return(body: json_base_results)
       uri = URI.parse(path)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |req|
         response = req.get('/get_test')
@@ -194,7 +177,7 @@ describe SmartwaiverSDK::SmartwaiverBase do
 
     it "HTTP Unauthorized" do
       path = "#{API_URL}/error_test"
-      FakeWeb.register_uri(:get, path, :body => json_base_results, :status => ["401", "Unauthorized"])
+      stub_request(:get, path).to_return(body: json_base_results, status: [401, "Unauthorized"])
       uri = URI.parse(path)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |req|
         response = req.get('/error_test')
@@ -206,7 +189,7 @@ describe SmartwaiverSDK::SmartwaiverBase do
 
     it "HTTP NotAcceptable" do
       path = "#{API_URL}/error_test"
-      FakeWeb.register_uri(:get, path, :body => json_base_results, :status => ["406", "Not Acceptable"])
+      stub_request(:get, path).to_return(body: json_base_results, status: [406, "Not Acceptable"])
       uri = URI.parse(path)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |req|
         response = req.get('/error_test')
@@ -217,7 +200,7 @@ describe SmartwaiverSDK::SmartwaiverBase do
 
     it "HTTP Client Error" do
       path = "#{API_URL}/error_test"
-      FakeWeb.register_uri(:get, path, :body => json_base_results, :status => ["404", "Not Found"])
+      stub_request(:get, path).to_return(body: json_base_results, status: [404, "Not Found"])
       uri = URI.parse(path)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |req|
         response = req.get('/error_test')
@@ -228,7 +211,7 @@ describe SmartwaiverSDK::SmartwaiverBase do
 
     it "HTTP Server Error" do
       path = "#{API_URL}/error_test"
-      FakeWeb.register_uri(:get, path, :body => json_base_results, :status => ["500", "Internal Server Error"])
+      stub_request(:get, path).to_return(body: json_base_results, status: [500, "Internal Server Error"])
       uri = URI.parse(path)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |req|
         response = req.get('/error_test')

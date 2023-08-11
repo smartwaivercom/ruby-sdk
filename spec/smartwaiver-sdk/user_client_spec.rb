@@ -6,7 +6,6 @@ describe SmartwaiverUserClient do
   attr_reader :client, :api_key
 
   before do
-    FakeWeb.allow_net_connect = false
     @api_key = "apikey"
     @client = SmartwaiverUserClient.new(@api_key)
   end
@@ -18,7 +17,7 @@ describe SmartwaiverUserClient do
 
     it "#settings" do
       path="#{API_URL}/v4/settings"
-      FakeWeb.register_uri(:get, path, :body => json_user_settings_results)
+      stub_request(:get, path).to_return(body: json_user_settings_results)
 
       response = @client.settings()
 
